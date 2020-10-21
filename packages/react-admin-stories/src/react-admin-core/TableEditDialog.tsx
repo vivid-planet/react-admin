@@ -20,12 +20,12 @@ interface IExampleRow {
 
 interface IEditFormProps {
     row: IExampleRow;
-    mode: "edit" | "add";
+    phantom?: boolean;
 }
 function EditForm(props: IEditFormProps) {
     return (
         <FinalForm
-            mode={props.mode}
+            mode={props.phantom ? "add" : "edit"}
             initialValues={props.row}
             onSubmit={values => {
                 alert(JSON.stringify(values));
@@ -37,7 +37,10 @@ function EditForm(props: IEditFormProps) {
 }
 
 function Story() {
-    const data: IExampleRow[] = [{ id: 1, foo: "blub", bar: "blub" }, { id: 2, foo: "blub", bar: "blub" }];
+    const data: IExampleRow[] = [
+        { id: 1, foo: "blub", bar: "blub" },
+        { id: 2, foo: "blub", bar: "blub" },
+    ];
 
     let editDialog: EditDialog | undefined;
 
@@ -83,11 +86,11 @@ function Story() {
             />
 
             <EditDialog ref={ref => (editDialog = ref ? ref : undefined)}>
-                {({ selectedId, selectionMode }) => (
+                {({ selectedId, phantom }) => (
                     <>
-                        {selectionMode && (
-                            <Selected selectionMode={selectionMode} selectedId={selectedId} rows={data}>
-                                {(row, { selectionMode: sm }) => <EditForm mode={sm} row={row} />}
+                        {phantom !== undefined && (
+                            <Selected phantom={phantom} selectedId={selectedId} rows={data}>
+                                {(row, { phantom: sm }) => <EditForm phantom={sm} row={row} />}
                             </Selected>
                         )}
                     </>

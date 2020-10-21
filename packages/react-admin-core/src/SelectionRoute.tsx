@@ -7,7 +7,7 @@ import { ISelectionApi } from "./SelectionApi";
 
 export interface ISelectionRouterRenderPropArgs {
     selectedId?: string;
-    selectionMode?: "edit" | "add";
+    phantom?: boolean;
     selectionApi: ISelectionApi;
 }
 
@@ -48,17 +48,17 @@ export class SelectionRoute extends React.Component<IProps> {
                         <Route path={path}>
                             {(props: RouteComponentProps<IRouteParams>) => {
                                 let selectedId: string | undefined;
-                                let selectionMode: "edit" | "add" | undefined;
+                                let phantom: boolean | undefined;
                                 if (props.match && props.match.params.id === "add") {
                                     selectedId = undefined;
-                                    selectionMode = "add";
+                                    phantom = true;
                                 } else if (props.match) {
                                     selectedId = props.match.params.id;
-                                    selectionMode = "edit";
+                                    phantom = false;
                                 }
                                 return this.props.children({
                                     selectedId,
-                                    selectionMode,
+                                    phantom,
                                     selectionApi: this.selectionApi,
                                 });
                             }}

@@ -17,7 +17,7 @@ interface ITitle {
 
 interface IProps {
     title: ITitle | string;
-    children: (injectedProps: { selectedId?: string; selectionMode?: "edit" | "add" }) => React.ReactNode;
+    children: (injectedProps: { selectedId?: string; phantom?: boolean }) => React.ReactNode;
 }
 export class EditDialog extends React.Component<IProps> {
     public static defaultProps = {
@@ -46,11 +46,11 @@ export class EditDialog extends React.Component<IProps> {
             <EditDialogApiContext.Provider value={this.editDialogApi}>
                 <DirtyHandler>
                     <SelectionRoute ref={this.selectionRef}>
-                        {({ selectedId, selectionMode, selectionApi }) => (
-                            <Dialog open={!!selectionMode} onClose={this.handleCancelClick.bind(this, selectionApi)}>
+                        {({ selectedId, phantom, selectionApi }) => (
+                            <Dialog open={phantom !== undefined} onClose={this.handleCancelClick.bind(this, selectionApi)}>
                                 <div>
-                                    <DialogTitle>{typeof title === "string" ? title : selectionMode === "edit" ? title.edit : title.add}</DialogTitle>
-                                    <DialogContent>{children({ selectedId, selectionMode })}</DialogContent>
+                                    <DialogTitle>{typeof title === "string" ? title : phantom ? title.add : title.edit}</DialogTitle>
+                                    <DialogContent>{children({ selectedId, phantom })}</DialogContent>
                                     <DialogActions>
                                         <Button onClick={this.handleCancelClick.bind(this, selectionApi)} color="primary">
                                             Abbrechen

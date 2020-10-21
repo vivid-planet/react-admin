@@ -4,7 +4,7 @@ import { ISelectionApi } from "./SelectionApi";
 
 export interface ISelectionRenderPropArgs {
     selectedId?: string;
-    selectionMode?: "edit" | "add";
+    phantom?: boolean;
     selectionApi: ISelectionApi;
 }
 interface IProps {
@@ -12,17 +12,18 @@ interface IProps {
 }
 interface IState {
     selectedId?: string;
-    selectionMode?: "edit" | "add";
+    phantom?: boolean;
 }
 export class Selection extends React.Component<IProps, IState> {
     private selectionApi: ISelectionApi;
     private dirtyHandlerApi?: IDirtyHandlerApi;
+
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             selectedId: undefined,
-            selectionMode: undefined,
+            phantom: undefined,
         };
 
         this.selectionApi = {
@@ -33,21 +34,21 @@ export class Selection extends React.Component<IProps, IState> {
     }
 
     public handleSelectId(id: string) {
-        this.setState({ selectedId: id, selectionMode: "edit" });
+        this.setState({ selectedId: id, phantom: false });
     }
 
     public handleDeselect() {
-        this.setState({ selectedId: undefined, selectionMode: undefined });
+        this.setState({ selectedId: undefined, phantom: undefined });
     }
 
     public handleAdd() {
-        this.setState({ selectedId: undefined, selectionMode: "add" });
+        this.setState({ selectedId: undefined, phantom: true });
     }
 
     public render() {
         return this.props.children({
             selectedId: this.state.selectedId,
-            selectionMode: this.state.selectionMode,
+            phantom: this.state.phantom,
             selectionApi: this.selectionApi,
         });
     }

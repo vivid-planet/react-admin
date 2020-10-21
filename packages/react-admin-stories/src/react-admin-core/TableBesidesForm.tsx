@@ -64,7 +64,7 @@ function ExampleTable(props: IExampleTableProps) {
 
 interface IExampleFormProps {
     user: IUser;
-    mode: "add" | "edit";
+    phantom?: boolean;
 }
 function ExampleForm(props: IExampleFormProps) {
     return (
@@ -93,15 +93,15 @@ function Story() {
     return (
         <DirtyHandler>
             <SelectionRoute>
-                {({ selectedId, selectionMode, selectionApi }) => (
+                {({ selectedId, phantom, selectionApi }) => (
                     <TableQuery api={api} loading={loading} error={error}>
                         <FixedLeftRightLayout>
                             <FixedLeftRightLayout.Left>
                                 <ExampleTable tableData={tableData} selectedId={selectedId} selectionApi={selectionApi} />
                             </FixedLeftRightLayout.Left>
                             <FixedLeftRightLayout.Right>
-                                <Selected selectionMode={selectionMode} selectedId={selectedId} rows={tableData.data}>
-                                    {(user, { selectionMode: selectedSelectionMode }) => <ExampleForm mode={selectedSelectionMode} user={user} />}
+                                <Selected phantom={phantom} selectedId={selectedId} rows={tableData.data}>
+                                    {(user, { phantom: p }) => <ExampleForm phantom={p} user={user} />}
                                 </Selected>
                             </FixedLeftRightLayout.Right>
                         </FixedLeftRightLayout>
