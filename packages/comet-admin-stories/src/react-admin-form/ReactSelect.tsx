@@ -13,6 +13,7 @@ function Story() {
     ];
     return (
         <div style={{ width: "300px" }}>
+            <Typography>Consider replacing ReactSelect with Autocomplete</Typography>
             <ListItem>
                 <Button component={"button"} disableTouchRipple>
                     <Typography variant="button">blah</Typography>

@@ -1,3 +1,4 @@
+import { Typography } from "@material-ui/core";
 import { storiesOf } from "@storybook/react";
 import { Field, FieldContainerLabelAbove } from "@vivid-planet/comet-admin";
 import { FinalFormReactSelectStaticOptions } from "@vivid-planet/comet-admin-react-select";
@@ -13,6 +14,8 @@ function Story() {
     ];
     return (
         <div style={{ width: "300px" }}>
+            <Typography>Consider replacing ReactSelect with Autocomplete</Typography>
+
             <Form
                 onSubmit={(values) => {
                     //
