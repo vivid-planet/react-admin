@@ -1,3 +1,4 @@
+export * from "./Autocomplete";
 export * from "./Field";
 export * from "./FieldContainer";
 export * from "./FieldContainerLabelAbove";
