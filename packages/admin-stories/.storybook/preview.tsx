@@ -8,7 +8,7 @@ import { addDecorator, addParameters } from "@storybook/react";
 import * as React from "react";
 import { IntlProvider } from "react-intl";
 import { MuiThemeProvider } from "@comet/admin";
-import { Theme, createMuiTheme } from "@material-ui/core";
+import { createMuiTheme } from "@material-ui/core";
 import { getThemeOptions } from "@comet/admin-theme";
 import styled, { createGlobalStyle } from "styled-components";
 

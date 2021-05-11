@@ -17,21 +17,24 @@ const Story = () => {
     return (
         <IntlProvider messages={{}} locale="de">
             <Form onSubmit={() => {}} initialValues={initialValues}>
-                {() => (
-                    <form style={{ width: 350 }}>
-                        <Field
-                            name="datetime1"
-                            dateInputLabel={"Date"}
-                            timeInputLabel={"Time"}
-                            component={FinalFormDateTimePicker}
-                            datePickerProps={{ endAdornment: <Calendar /> }}
-                            timePickerProps={{ endAdornment: <Time /> }}
-                            fullWidth
-                        />
-                        <Field name="datetime2" label={"Date & Time"} component={FinalFormDateTimePicker} />
-                        <Field name="datetime3" label={"Date & Time"} component={FinalFormDateTimePicker} required />
-                        <Field name="datetime4" dateInputLabel={"Date"} timeInputLabel={"Time"} component={FinalFormDateTimePicker} disabled />
-                    </form>
+                {({ values }) => (
+                    <>
+                        <form style={{ width: 350 }}>
+                            <Field
+                                name="datetime1"
+                                dateInputLabel={"Date"}
+                                timeInputLabel={"Time"}
+                                component={FinalFormDateTimePicker}
+                                datePickerProps={{ endAdornment: <Calendar /> }}
+                                timePickerProps={{ endAdornment: <Time /> }}
+                                fullWidth
+                            />
+                            <Field name="datetime2" label={"Date & Time"} component={FinalFormDateTimePicker} />
+                            <Field name="datetime3" label={"Date & Time"} component={FinalFormDateTimePicker} required />
+                            <Field name="datetime4" dateInputLabel={"Date"} timeInputLabel={"Time"} component={FinalFormDateTimePicker} disabled />
+                        </form>
+                        <pre>{JSON.stringify(values, null, 2)}</pre>
+                    </>
                 )}
             </Form>
         </IntlProvider>

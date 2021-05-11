@@ -1,10 +1,11 @@
+import { makeStyles } from "@material-ui/core";
+import { Theme } from "@material-ui/core/styles";
 import zIndex from "@material-ui/core/styles/zIndex";
-import { createStyles } from "@material-ui/styles";
 
 export type CometAdminDatePickerClassKeys = "root" | "fullWidth" | "disabled" | "inputBase" | "popper";
 
-const styles = () => {
-    return createStyles<CometAdminDatePickerClassKeys, any>({
+export const useStyles = makeStyles<Theme, {}, CometAdminDatePickerClassKeys>(
+    () => ({
         root: {
             position: "relative",
             display: "inline-block",
@@ -24,7 +25,6 @@ const styles = () => {
                 overflowX: "auto",
             },
         },
-    });
-};
-
-export default styles;
+    }),
+    { name: "CometAdminDatePicker" },
+);

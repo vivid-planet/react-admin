@@ -1,14 +1,15 @@
+import { makeStyles } from "@material-ui/core";
+import { Theme } from "@material-ui/core/styles";
 import zIndex from "@material-ui/core/styles/zIndex";
-import { createStyles } from "@material-ui/styles";
 
 export type CometAdminTimePickerClassKeys = "root" | "fullWidth" | "disabled" | "inputBase" | "popper";
 
-const styles = () => {
-    return createStyles<CometAdminTimePickerClassKeys, any>({
+export const useStyles = makeStyles<Theme, {}, CometAdminTimePickerClassKeys>(
+    () => ({
         root: {
             position: "relative",
             display: "inline-block",
-            width: 120,
+            width: 160,
         },
         fullWidth: {
             display: "block",
@@ -25,7 +26,6 @@ const styles = () => {
                 overflowX: "auto",
             },
         },
-    });
-};
-
-export default styles;
+    }),
+    { name: "CometAdminTimePicker" },
+);

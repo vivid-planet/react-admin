@@ -2,25 +2,25 @@ import "react-dates/initialize";
 import "react-dates/lib/css/_datepicker.css";
 
 import { ClearInputButton, InputBase } from "@comet/admin";
-import { ClickAwayListener, InputBaseProps, Paper, Popper, Typography, WithStyles } from "@material-ui/core";
-import { withStyles } from "@material-ui/styles";
-import * as moment from "moment";
+import { ClickAwayListener, InputBaseProps, Paper, Popper, Typography } from "@material-ui/core";
+import { format as formatDate, isValid as isValidDate, parse as parseDate } from "date-fns";
 import * as React from "react";
 import { DayPickerSingleDateController, DayPickerSingleDateControllerShape } from "react-dates";
 import { FieldRenderProps } from "react-final-form";
 import { useIntl } from "react-intl";
 
 import { getDateControllerText } from "../utils/getDateControllerDate";
-import styles from "./DatePicker.styles";
+import { useStyles } from "./DatePicker.styles";
 
 export interface DatePickerThemeProps extends InputBaseProps {
     numberOfMonths?: number;
     showClearButton?: boolean;
     dateControllerProps?: DayPickerSingleDateController;
+    invalidValueMessage?: string;
+    dateFormat?: string;
 }
 
-const Picker: React.FC<WithStyles<typeof styles> & DatePickerThemeProps & FieldRenderProps<Date, HTMLInputElement>> = ({
-    classes,
+const Picker: React.FC<DatePickerThemeProps & FieldRenderProps<Date, HTMLInputElement>> = ({
     input,
     disabled,
     placeholder,
@@ -28,29 +28,43 @@ const Picker: React.FC<WithStyles<typeof styles> & DatePickerThemeProps & FieldR
     showClearButton,
     dateControllerProps,
     inputProps,
+    setValidationError,
+    invalidValueMessage,
+    dateFormat,
     ...restProps
 }) => {
     const intl = useIntl();
-    const localeName = intl.locale;
-    const locale = moment().locale(localeName);
-    const localeDateFormat = locale.localeData().longDateFormat("L");
+    const classes = useStyles();
+
+    const dateDisplayFormat = dateFormat
+        ? dateFormat
+        : intl.formatMessage({ id: "cometAdmin.dateTime.formFieldDateFormat", defaultMessage: "yyyy-MM-dd" });
+
     const placeholderText = placeholder
         ? placeholder
         : intl.formatMessage({ id: "cometAdmin.dateTime.datePicker.placeholder", defaultMessage: "Date" });
-
-    React.useEffect(() => {
-        moment.locale(localeName);
-    }, [localeName]);
 
     const { value, onChange, onBlur, onFocus, ...restInput } = input;
     const rootRef = React.useRef(null);
     const [showPopper, setShowPopper] = React.useState<boolean>(false);
     const [showDayPicker, setShowDayPicker] = React.useState<boolean>(false);
-    const [customValue, setCustomValue] = React.useState<string | null>(null);
-    const formattedValue = moment(input.value).isValid() ? moment(input.value).format(localeDateFormat) : "";
-    const displayValue = customValue ? customValue : formattedValue;
+    const [unvalidatedValue, setUnvalidatedValue] = React.useState<string | null>(null);
+    const formattedValue = isValidDate(value) ? formatDate(value, dateDisplayFormat) : "";
+    const displayValue = unvalidatedValue ? unvalidatedValue : formattedValue;
+    const disableClearButton: boolean = !value && unvalidatedValue === null;
+
+    const invalidValueText = invalidValueMessage
+        ? invalidValueMessage
+        : intl.formatMessage(
+              {
+                  id: "cometAdmin.dateTime.datePicker.invalidValue",
+                  defaultMessage: 'Date must be formatted as "{dateFormat}"',
+              },
+              { dateFormat: dateDisplayFormat },
+          );
 
     const showPicker = () => {
+        setValidationError(null); // TODO: Find a less hacky way??
         onFocus();
         setShowPopper(true);
 
@@ -69,31 +83,40 @@ const Picker: React.FC<WithStyles<typeof styles> & DatePickerThemeProps & FieldR
         const newValue = e.currentTarget.value;
 
         if (newValue) {
-            const momentNewValue = moment(newValue, localeDateFormat);
+            const newDateValue = parseDate(newValue, dateDisplayFormat, new Date());
 
-            if (momentNewValue.isValid()) {
-                onChange(momentNewValue.toDate());
-                setCustomValue(null);
+            if (isValidDate(newDateValue)) {
+                onChange(newDateValue);
+                setUnvalidatedValue(null);
             } else {
-                onChange(null);
-                setCustomValue(null);
+                setValidationError(invalidValueText); // TODO: Find a less hacky way??
             }
         }
     };
 
     const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValidationError(null); // TODO: Find a less hacky way??
+
         const newValue = e.currentTarget.value;
+
         if (newValue) {
-            setCustomValue(newValue);
+            setUnvalidatedValue(newValue);
         } else {
             onChange(null);
-            setCustomValue(null);
+            setUnvalidatedValue(null);
         }
     };
 
     const onDateChange: DayPickerSingleDateControllerShape["onDateChange"] = (date) => {
         onChange(date ? date.toDate() : null);
+        setUnvalidatedValue(null);
         hidePicker();
+    };
+
+    const onClearInput = () => {
+        onChange(null);
+        setUnvalidatedValue(null);
+        setValidationError(null); // TODO: Find a less hacky way
     };
 
     const rootClasses: string[] = [classes.root];
@@ -105,7 +128,7 @@ const Picker: React.FC<WithStyles<typeof styles> & DatePickerThemeProps & FieldR
             <div ref={rootRef} className={rootClasses.join(" ")}>
                 <InputBase
                     classes={{ root: classes.inputBase }}
-                    endAdornment={showClearButton ? <ClearInputButton onClick={() => onChange(null)} disabled={!value} /> : undefined}
+                    endAdornment={showClearButton ? <ClearInputButton onClick={() => onClearInput()} disabled={disableClearButton} /> : undefined}
                     disabled={disabled}
                     placeholder={placeholderText}
                     value={displayValue}
@@ -148,4 +171,4 @@ const Picker: React.FC<WithStyles<typeof styles> & DatePickerThemeProps & FieldR
     );
 };
 
-export const FinalFormDatePicker = withStyles(styles, { name: "CometAdminDatePicker" })(Picker);
+export const FinalFormDatePicker = Picker;

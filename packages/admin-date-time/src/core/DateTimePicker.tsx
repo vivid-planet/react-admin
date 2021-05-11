@@ -1,10 +1,11 @@
 import { FormControl, FormLabel, WithStyles } from "@material-ui/core";
 import { withStyles } from "@material-ui/styles";
-import * as moment from "moment";
+import { format as formatDate, isValid as isValidDate, parse as parseDate } from "date-fns";
 import * as React from "react";
 import { FieldRenderProps } from "react-final-form";
 import { useIntl } from "react-intl";
 
+import { timeFormatForDatabaseStorage } from "../utils/helper";
 import { DatePickerThemeProps, FinalFormDatePicker } from "./DatePicker";
 import styles from "./DateTimePicker.styles";
 import { FinalFormTimePicker, TimePickerProps } from "./TimePicker";
@@ -29,42 +30,47 @@ const DateTime: React.FC<WithStyles<typeof styles> & DateTimePickerProps & Field
     datePickerProps,
     timePickerProps,
 }) => {
-    const intl = useIntl();
-    const localeName = intl.locale;
     const { onChange, ...otherInput } = input;
 
-    React.useEffect(() => {
-        moment.locale(localeName);
-    }, [localeName]);
+    const intl = useIntl();
+    const dateFormat = intl.formatMessage({ id: "cometAdmin.dateTime.formFieldDateFormat", defaultMessage: "yyyy-MM-dd" });
+    const inputIsValidDate = input.value && isValidDate(input.value);
 
     const onDateChange = (newDateValue: Date | null) => {
-        if (!newDateValue) onChange(null);
-
-        const newDateString = moment(newDateValue).format("YYYY-MM-DD");
-        const currentValue = moment(input.value);
-
-        if (currentValue.isValid()) {
-            const currentTimeString = moment(input.value).format("HH:mm");
-            const newDate = moment(`${newDateString} ${currentTimeString}`);
-            onChange(newDate.toDate());
+        if (!newDateValue) {
+            onChange(null);
         } else {
-            const nextFullHourString = moment().add(59, "minutes").startOf("hour").format("HH:mm");
-            onChange(moment(`${newDateString} ${nextFullHourString}`).toDate());
+            if (inputIsValidDate && input.value instanceof Date) {
+                newDateValue.setHours(input.value.getHours());
+                newDateValue.setMinutes(input.value.getMinutes());
+                newDateValue.setSeconds(input.value.getSeconds());
+            } else {
+                newDateValue.setHours(0);
+                newDateValue.setMinutes(0);
+                newDateValue.setSeconds(0);
+            }
+
+            onChange(newDateValue);
         }
     };
 
     const onTimeChange = (newTimeValue: string | null) => {
-        if (!newTimeValue) onChange(null);
+        if (!newTimeValue) {
+            onChange(null);
+        } else {
+            const newDateValue: Date = inputIsValidDate && input.value instanceof Date ? input.value : new Date();
+            const timeDateValue = parseDate(newTimeValue, timeFormatForDatabaseStorage, new Date());
 
-        const currentValue = moment(input.value);
-        const currentDateString = currentValue.isValid() ? currentValue.format("YYYY-MM-DD") : moment().format("YYYY-MM-DD");
-        const newDate = moment(`${currentDateString} ${newTimeValue}`);
-        onChange(moment(newDate).toDate());
+            newDateValue.setHours(timeDateValue.getHours());
+            newDateValue.setMinutes(timeDateValue.getMinutes());
+            newDateValue.setSeconds(timeDateValue.getSeconds());
+
+            onChange(newDateValue);
+        }
     };
 
-    const momentValue = input.value && moment(input.value).isValid() ? moment(input.value) : null;
-    const dateStringValue: string = momentValue?.isValid() ? momentValue.format("YYYY-MM-DD") : "";
-    const timeStringValue: string | null = momentValue?.isValid() ? momentValue.format("HH:mm") : null;
+    const dateValue: Date | null = inputIsValidDate && input.value instanceof Date ? input.value : null;
+    const timeValue: string | null = dateValue ? formatDate(dateValue, timeFormatForDatabaseStorage) : null;
 
     const rootClasses: string[] = [classes.root];
     if (disabled) rootClasses.push(classes.disabled);
@@ -75,7 +81,7 @@ const DateTime: React.FC<WithStyles<typeof styles> & DateTimePickerProps & Field
             <FormControl classes={{ root: classes.date }}>
                 {dateInputLabel && <FormLabel disabled={disabled}>{dateInputLabel}</FormLabel>}
                 <FinalFormDatePicker
-                    input={{ ...otherInput, onChange: onDateChange, value: dateStringValue }}
+                    input={{ ...otherInput, onChange: onDateChange, value: dateValue }}
                     meta={meta}
                     disabled={disabled}
                     fullWidth
@@ -85,7 +91,7 @@ const DateTime: React.FC<WithStyles<typeof styles> & DateTimePickerProps & Field
             <FormControl classes={{ root: classes.time }}>
                 {dateInputLabel && <FormLabel disabled={disabled}>{timeInputLabel}</FormLabel>}
                 <FinalFormTimePicker
-                    input={{ ...otherInput, onChange: onTimeChange, value: timeStringValue }}
+                    input={{ ...otherInput, onChange: onTimeChange, value: timeValue }}
                     meta={meta}
                     disabled={disabled}
                     fullWidth
