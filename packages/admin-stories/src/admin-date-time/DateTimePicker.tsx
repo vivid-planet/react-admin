@@ -1,17 +1,19 @@
 import { Field } from "@comet/admin";
 import { FinalFormDateTimePicker } from "@comet/admin-date-time";
-import { AccessTime, Today } from "@material-ui/icons";
+import { Calendar, Time } from "@comet/admin-icons";
 import { storiesOf } from "@storybook/react";
-import * as moment from "moment";
 import * as React from "react";
 import { Form } from "react-final-form";
 import { IntlProvider } from "react-intl";
 
+const today = new Date();
+
+const initialValues = {
+    datetime2: today,
+    datetime3: today,
+};
+
 const Story = () => {
-    const initialValues = {
-        datetime2: moment().toDate(),
-        datetime3: moment().toDate(),
-    };
     return (
         <IntlProvider messages={{}} locale="de">
             <Form onSubmit={() => {}} initialValues={initialValues}>
@@ -22,8 +24,8 @@ const Story = () => {
                             dateInputLabel={"Date"}
                             timeInputLabel={"Time"}
                             component={FinalFormDateTimePicker}
-                            datePickerProps={{ endAdornment: <Today fontSize={"small"} /> }}
-                            timePickerProps={{ endAdornment: <AccessTime fontSize={"small"} /> }}
+                            datePickerProps={{ endAdornment: <Calendar /> }}
+                            timePickerProps={{ endAdornment: <Time /> }}
                             fullWidth
                         />
                         <Field name="datetime2" label={"Date & Time"} component={FinalFormDateTimePicker} />

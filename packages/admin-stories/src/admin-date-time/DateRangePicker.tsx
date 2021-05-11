@@ -1,16 +1,21 @@
 import { Field } from "@comet/admin";
 import { DateRangePickerValue, FinalFormDateRangePicker } from "@comet/admin-date-time";
-import TodayIcon from "@material-ui/icons/Today";
+import { Calendar } from "@comet/admin-icons";
 import { storiesOf } from "@storybook/react";
-import * as moment from "moment";
 import * as React from "react";
 import { Form } from "react-final-form";
 import { IntlProvider } from "react-intl";
 
-const Story = () => {
-    const range: DateRangePickerValue = { start: moment().add(2, "days").toDate(), end: moment().add(6, "days").toDate() };
-    const initialValues = { date2: range, date3: range, date4: range };
+const startDate = new Date();
+const endDate = new Date();
 
+startDate.setDate(startDate.getDate() + 2);
+endDate.setDate(startDate.getDate() + 4);
+
+const range: DateRangePickerValue = { start: startDate, end: endDate };
+const initialValues = { date2: range, date3: range, date4: range };
+
+const Story = () => {
     return (
         <IntlProvider messages={{}} locale="de">
             <Form onSubmit={() => {}} initialValues={initialValues}>
@@ -21,17 +26,11 @@ const Story = () => {
                             name="date2"
                             label="Date, with icons"
                             component={FinalFormDateRangePicker}
-                            startAdornment={<TodayIcon fontSize={"small"} />}
-                            endAdornment={<TodayIcon fontSize={"small"} />}
+                            startAdornment={<Calendar />}
+                            endAdornment={<Calendar />}
                         />
                         <Field name="date3" label="Date, with clear-button" component={FinalFormDateRangePicker} showClearButton />
-                        <Field
-                            name="date4"
-                            label="Date, required"
-                            required
-                            component={FinalFormDateRangePicker}
-                            startAdornment={<TodayIcon fontSize={"small"} />}
-                        />
+                        <Field name="date4" label="Date, required" required component={FinalFormDateRangePicker} startAdornment={<Calendar />} />
                         <Field name="date5" label="Date, disabled" disabled component={FinalFormDateRangePicker} />
                     </form>
                 )}
