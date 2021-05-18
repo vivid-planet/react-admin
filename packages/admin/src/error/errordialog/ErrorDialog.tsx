@@ -23,34 +23,15 @@ export type ErrorMethods = {
     setError: (options: ErrorDialogOptions) => void;
 };
 
-export interface ErrorProps {}
+export interface ErrorProps {
+    errorOptions: ErrorDialogOptions;
+}
 
-const ErrorDialog: React.ForwardRefRenderFunction<ErrorMethods, ErrorProps> = (props, ref) => {
-    const [errorOptions, setErrorOptions] = React.useState<ErrorDialogOptions | null>(null);
-    const [errorVisible, setErrorVisible] = React.useState<boolean>(false);
-
+const ErrorDialog: React.FunctionComponent<ErrorProps> = ({ errorOptions }) => {
     const intl = useIntl();
-
-    React.useImperativeHandle(ref, () => ({
-        setError(options: ErrorDialogOptions) {
-            setErrorOptions(options);
-            setErrorVisible(true);
-        },
-    }));
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-    if (!errorOptions) {
-        return null;
-    }
-
-    const handleClose = () => {
-        setErrorVisible(false);
-
-        setTimeout(() => {
-            setErrorOptions(null); // delay cleaning error so Dialog Content does not go away while fadeout transition
-        }, 200);
-    };
 
     // Destructuring and default values
     const {
@@ -60,7 +41,7 @@ const ErrorDialog: React.ForwardRefRenderFunction<ErrorMethods, ErrorProps> = (p
     } = errorOptions;
 
     return (
-        <Dialog open={errorVisible} onClose={handleClose} fullScreen={fullScreen}>
+        <Dialog fullScreen={fullScreen}>
             <DialogTitle>
                 <Box display={"flex"} flexDirection={"row"}>
                     <Error />
@@ -83,7 +64,7 @@ const ErrorDialog: React.ForwardRefRenderFunction<ErrorMethods, ErrorProps> = (p
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose} color="primary">
+                <Button color="primary">
                     <FormattedMessage id="comet.generic.ok" defaultMessage="Ok" />
                 </Button>
             </DialogActions>

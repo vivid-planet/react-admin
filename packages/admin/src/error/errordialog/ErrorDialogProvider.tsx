@@ -1,21 +1,28 @@
 import * as React from "react";
 
-import ErrorDialog, { ErrorDialogComponentRefType, ErrorDialogOptions } from "./ErrorDialog";
+import ErrorDialog, { ErrorDialogOptions } from "./ErrorDialog";
 import { ErrorDialogContext } from "./ErrorDialogContext";
 
+const RenderCounter = () => {
+    const renderCount = React.useRef(0);
+    renderCount.current = renderCount.current + 1;
+    return <div>RenderCount: {JSON.stringify(renderCount)}</div>;
+};
+
 export const ErrorDialogProvider: React.FunctionComponent = ({ children }) => {
-    const errorDialogRef = React.useRef<ErrorDialogComponentRefType>(null);
+    const [errorOptions, setErrorOptions] = React.useState<ErrorDialogOptions | null>(null);
 
     const showError = (options: ErrorDialogOptions) => {
-        if (errorDialogRef?.current) {
-            errorDialogRef.current?.setError(options);
-        }
+        setErrorOptions(options);
     };
 
     return (
-        <ErrorDialogContext.Provider value={{ showError }}>
-            {children}
-            <ErrorDialog ref={errorDialogRef} />
-        </ErrorDialogContext.Provider>
+        <>
+            <RenderCounter />
+            <ErrorDialogContext.Provider value={{ showError }}>
+                {children}
+                {errorOptions && <ErrorDialog errorOptions={errorOptions} />}
+            </ErrorDialogContext.Provider>
+        </>
     );
 };
