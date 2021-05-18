@@ -12,6 +12,10 @@ const RenderCounter = () => {
 export const ErrorDialogProvider: React.FunctionComponent = ({ children }) => {
     const [errorOptions, setErrorOptions] = React.useState<ErrorDialogOptions | null>(null);
 
+    const ChildrenContainer = React.memo(({ children }) => {
+        return <>{children}</>;
+    });
+
     const showError = (options: ErrorDialogOptions) => {
         setErrorOptions(options);
     };
@@ -20,7 +24,7 @@ export const ErrorDialogProvider: React.FunctionComponent = ({ children }) => {
         <>
             <RenderCounter />
             <ErrorDialogContext.Provider value={{ showError }}>
-                {children}
+                <ChildrenContainer>{children}</ChildrenContainer>
                 {errorOptions && <ErrorDialog errorOptions={errorOptions} />}
             </ErrorDialogContext.Provider>
         </>
