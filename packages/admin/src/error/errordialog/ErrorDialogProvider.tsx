@@ -9,16 +9,19 @@ const RenderCounter = () => {
     return <div>RenderCount: {JSON.stringify(renderCount)}</div>;
 };
 
+const ChildrenContainer = React.memo(({ children }) => {
+    return <>{children}</>;
+});
+
 export const ErrorDialogProvider: React.FunctionComponent = ({ children }) => {
     const [errorOptions, setErrorOptions] = React.useState<ErrorDialogOptions | null>(null);
 
-    const ChildrenContainer = React.memo(({ children }) => {
-        return <>{children}</>;
-    });
-
-    const showError = (options: ErrorDialogOptions) => {
-        setErrorOptions(options);
-    };
+    const showError = React.useCallback(
+        () => (options: ErrorDialogOptions) => {
+            setErrorOptions(options);
+        },
+        [setErrorOptions],
+    );
 
     return (
         <>
