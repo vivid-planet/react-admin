@@ -17,11 +17,15 @@ export const ErrorDialogProvider: React.FunctionComponent = ({ children }) => {
     const [errorOptions, setErrorOptions] = React.useState<ErrorDialogOptions | null>(null);
 
     const showError = React.useCallback(
-        () => (options: ErrorDialogOptions) => {
+        (options: ErrorDialogOptions) => {
+            console.log("## ShowError: ", options);
             setErrorOptions(options);
         },
         [setErrorOptions],
     );
+    React.useEffect(() => {
+        console.log("## Options changed: ", errorOptions);
+    }, [errorOptions]);
 
     return (
         <>

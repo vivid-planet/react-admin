@@ -41,7 +41,7 @@ const ErrorDialog: React.FunctionComponent<ErrorProps> = ({ errorOptions }) => {
     } = errorOptions;
 
     return (
-        <Dialog fullScreen={fullScreen}>
+        <Dialog open={true} fullScreen={fullScreen}>
             <DialogTitle>
                 <Box display={"flex"} flexDirection={"row"}>
                     <Error />

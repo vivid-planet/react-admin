@@ -1,5 +1,6 @@
 import { onError } from "@apollo/client/link/error";
 
+import { ErrorDialogOptions } from "./ErrorDialog";
 import { ErrorDialogContextProps } from "./ErrorDialogContext";
 import { ErrorScope, errorScopeForOperationContext } from "./ErrorScope";
 
@@ -14,7 +15,9 @@ export const createErrorDialogApolloLink = ({ errorDialog }: ErrorDialogApolloLi
             if (graphQLErrors) {
                 graphQLErrors.forEach(({ extensions, message }) => {
                     if (errorScope === ErrorScope.Global) {
-                        errorDialog.showError({ error: message });
+                        const errorDialogOptions: ErrorDialogOptions = { error: message };
+                        console.log("message: ", errorDialog, errorDialogOptions);
+                        errorDialog.showError(errorDialogOptions);
                     }
                 });
             } else if (networkError) {
