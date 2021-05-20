@@ -10,13 +10,17 @@ import {
     StackApiContext,
     ToolbarBreadcrumbs,
     ToolbarTitleItem,
+    useTableQueryFilter,
 } from "@comet/admin";
+import { Form } from "react-final-form";
+
 import { Button, IconButton, Typography, Grid } from "@material-ui/core";
 import { toolbarDecorator } from "./toolbar.decorator";
 import { ChevronLeft, CometColor } from "@comet/admin-icons";
 
 import StoryRouter from "storybook-react-router";
 import { FormattedMessage } from "react-intl";
+import { Field, FilterBar, FilterBarField, FilterBarMoreFilters, FinalFormInput, TableFilterFinalForm } from "@comet/admin";
 
 <Meta title="docs/@comet/admin/toolbar" decorators={[toolbarDecorator(), StoryRouter()]} />
 
@@ -443,5 +447,44 @@ The Toolbar expands automatically if it needs more space
                 </Toolbar>
             )}
         </StackApiContext.Consumer>
+    </Story>
+</Canvas>
+
+### FilterBar
+
+<Canvas>
+    <Story name="Filterbar">
+        {() => {
+            const Story = () => {
+                const filterApi = useTableQueryFilter({});
+                return (
+                    <Toolbar>
+                        <ToolbarTitleItem>Filterbar</ToolbarTitleItem>
+                        <ToolbarItem>
+                            <TableFilterFinalForm filterApi={filterApi}>
+                                <FilterBar>
+                                    <FilterBarField label={"Username"} name="username">
+                                        <Field name="username" type="text" component={FinalFormInput} fullWidth />
+                                    </FilterBarField>
+                                    <FilterBarMoreFilters>
+                                        <FilterBarField label={"Email"} name="email">
+                                            <ExampleWithSelect />
+                                        </FilterBarField>
+                                        <FilterBarField label={"Name"} name="name">
+                                            <Field name="name" type="text" component={FinalFormInput} fullWidth />
+                                        </FilterBarField>
+                                        <FilterBarField label={"Website"} name="website">
+                                            <Field name="url" type="text" component={FinalFormInput} fullWidth />
+                                            <Field name="name" type="text" component={FinalFormInput} fullWidth />
+                                        </FilterBarField>
+                                    </FilterBarMoreFilters>
+                                </FilterBar>
+                            </TableFilterFinalForm>
+                        </ToolbarItem>
+                    </Toolbar>
+                );
+            };
+            return <Story />;
+        }}
     </Story>
 </Canvas>
