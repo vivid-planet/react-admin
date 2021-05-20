@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import ErrorDialog, { ErrorDialogOptions } from "./ErrorDialog";
-import { ErrorDialogContext } from "./ErrorDialogContext";
+import { ErrorDialogContext, ErrorDialogContextProps } from "./ErrorDialogContext";
 
 const RenderCounter = () => {
     const renderCount = React.useRef(0);
@@ -16,21 +16,18 @@ const ChildrenContainer = React.memo(({ children }) => {
 export const ErrorDialogProvider: React.FunctionComponent = ({ children }) => {
     const [errorOptions, setErrorOptions] = React.useState<ErrorDialogOptions | null>(null);
 
-    const showError = React.useCallback(
-        (options: ErrorDialogOptions) => {
-            console.log("## ShowError: ", options);
-            setErrorOptions(options);
-        },
-        [setErrorOptions],
-    );
-    React.useEffect(() => {
-        console.log("## Options changed: ", errorOptions);
-    }, [errorOptions]);
+    const errorDialog = React.useMemo((): ErrorDialogContextProps => {
+        return {
+            showError: (options: ErrorDialogOptions) => {
+                setErrorOptions(options);
+            },
+        };
+    }, [setErrorOptions]);
 
     return (
         <>
             <RenderCounter />
-            <ErrorDialogContext.Provider value={{ showError }}>
+            <ErrorDialogContext.Provider value={errorDialog}>
                 <ChildrenContainer>{children}</ChildrenContainer>
                 {errorOptions && <ErrorDialog errorOptions={errorOptions} />}
             </ErrorDialogContext.Provider>
